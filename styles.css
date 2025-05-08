@@ -1,0 +1,32 @@
+/* General styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+
+.hero {
+    background: linear-gradient(to right, #ff6f61, #ffcc70);
+    color: white;
+    height: 100vh;
+}
+
+.features i, .testimonials blockquote, .pricing .card {
+    transition: transform 0.3s ease;
+}
+
+.features i:hover, .pricing .card:hover {
+    transform: scale(1.1);
+}
+
+.footer {
+    background-color: #343a40;
+}
+
+/* Smooth navbar scroll */
+.navbar a {
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #ff6f61;
+}
