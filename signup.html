@@ -1,0 +1,47 @@
+<!-- 
+signup.html
+Signup page for TinDog application.
+Contains a semantic form for new user registration.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | TinDog</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <script src="scripts/auth.js" defer></script>
+</head>
+<body>
+    <main class="signup">
+        <section class="signup__container">
+            <h1>Sign Up</h1>
+            <form id="signupForm" novalidate>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <!-- Message box immediately under the form -->
+            <div id="signupMessage" aria-live="polite"></div>
+
+            <!-- Static login link at the bottom -->
+            <p class="form-footer">
+                Already have an account? <a href="login.html">Log In</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>

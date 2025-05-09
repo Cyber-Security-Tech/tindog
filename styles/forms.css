@@ -1,0 +1,87 @@
+/* 
+forms.css 
+Styles for all forms in the TinDog application.
+Handles layout, spacing, inputs, buttons, and error/success messages.
+*/
+
+/* Shared container styles */
+.signup__container,
+.login__container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.signup__container h1,
+.login__container h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.signup__container label,
+.login__container label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.signup__container input,
+.login__container input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.signup__container button,
+.login__container button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1.5rem;
+    background-color: var(--primary-color, #4ecdc4);
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signup__container button:hover,
+.login__container button:hover {
+    background-color: var(--secondary-color, #ff6b6b);
+}
+
+/* Message box styles */
+#signupMessage,
+#loginMessage {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+.success {
+    color: #4ecdc4;
+}
+
+/* Footer link styles */
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem; /* increased from 1rem to 1.5rem for better spacing */
+}
+
+.form-footer a {
+    color: var(--primary-color, #4ecdc4);
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}

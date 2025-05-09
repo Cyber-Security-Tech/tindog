@@ -1,0 +1,36 @@
+<!-- 
+login.html
+Login page for TinDog application.
+Contains a semantic form for existing users to log in.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | TinDog</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <script src="scripts/auth.js" defer></script>
+</head>
+<body>
+    <main class="login">
+        <section class="login__container">
+            <h1>Log In</h1>
+            <form id="loginForm" novalidate>
+                <label for="email">Email</label>
+                <input type="email" id="loginEmail" name="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="loginPassword" name="password" required>
+
+                <button type="submit">Log In</button>
+            </form>
+
+            <!-- Message box for success or error messages -->
+            <div id="loginMessage" aria-live="polite"></div>
+        </section>
+    </main>
+</body>
+</html>
