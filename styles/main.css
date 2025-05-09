@@ -1,32 +1,131 @@
-/* General styles */
+/* main.css */
+
+/* General resets and body */
 body {
     font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
 }
 
-.hero {
-    background: linear-gradient(to right, #ff6f61, #ffcc70);
-    color: white;
-    height: 100vh;
+/* Navbar */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
-.features i, .testimonials blockquote, .pricing .card {
+.nav-link {
+    margin-right: 1rem;
+}
+
+.nav-link.active {
+    font-weight: 600;
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Hero / Header Section */
+header {
+    background-size: cover;
+    background-position: center;
+    padding: 4rem 0;
+    color: #fff;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+}
+
+/* Section Titles */
+section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Dog Cards */
+.card {
+    border-radius: 12px;
     transition: transform 0.3s ease;
+    position: relative;
 }
 
-.features i:hover, .pricing .card:hover {
-    transform: scale(1.1);
+.card:hover {
+    transform: scale(1.03);
 }
 
-.footer {
-    background-color: #343a40;
+.card img {
+    object-fit: cover;
+    height: 250px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
-/* Smooth navbar scroll */
-.navbar a {
+.card-title {
+    font-weight: 700;
+}
+
+.card-text {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.save-btn {
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    background-color: #4ecdc4;
+    color: white;
+}
+
+/* Heart Icon */
+.heart-icon {
+    font-size: 1.5rem;
+    color: gray;
     transition: color 0.3s ease;
 }
 
-.navbar a:hover {
-    color: #ff6f61;
+.heart-icon:hover {
+    color: red !important;
+    cursor: pointer;
+}
+
+/* Footer */
+footer {
+    background-color: #343a40;
+    color: #fff;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+}
+
+/* Utility Classes */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.bg-dark {
+    background-color: #343a40 !important;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.2rem;
+    }
+    header p {
+        font-size: 1rem;
+    }
 }

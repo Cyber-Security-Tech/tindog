@@ -1,24 +1,22 @@
-/* 
-forms.css 
-Styles for all forms in the TinDog application.
-Handles layout, spacing, inputs, buttons, and error/success messages.
-*/
+/* forms.css */
+/* Styles for signup and login forms */
 
 /* Shared container styles */
 .signup__container,
 .login__container {
     max-width: 400px;
-    margin: 5rem auto;
+    margin: 6rem auto;
     padding: 2rem;
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .signup__container h1,
 .login__container h1 {
     text-align: center;
     margin-bottom: 1.5rem;
+    font-weight: 700;
 }
 
 .signup__container label,
@@ -31,10 +29,10 @@ Handles layout, spacing, inputs, buttons, and error/success messages.
 .signup__container input,
 .login__container input {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.6rem;
     margin-top: 0.5rem;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 .signup__container button,
@@ -46,13 +44,16 @@ Handles layout, spacing, inputs, buttons, and error/success messages.
     border: none;
     color: #fff;
     font-size: 1rem;
-    border-radius: 5px;
+    font-weight: 600;
+    border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .signup__container button:hover,
 .login__container button:hover {
     background-color: var(--secondary-color, #ff6b6b);
+    transform: translateY(-2px);
 }
 
 /* Message box styles */
@@ -74,7 +75,8 @@ Handles layout, spacing, inputs, buttons, and error/success messages.
 /* Footer link styles */
 .form-footer {
     text-align: center;
-    margin-top: 1.5rem; /* increased from 1rem to 1.5rem for better spacing */
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
 }
 
 .form-footer a {

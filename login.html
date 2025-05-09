@@ -1,9 +1,4 @@
-<!-- 
-login.html
-Login page for TinDog application.
-Contains a semantic form for existing users to log in.
--->
-
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +7,42 @@ Contains a semantic form for existing users to log in.
     <title>Log In | TinDog</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/forms.css">
-    <script src="scripts/auth.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const loginMessageBox = document.getElementById('loginMessage');
+
+            loginForm.addEventListener('submit', e => {
+                e.preventDefault();
+                loginMessageBox.textContent = '';
+                loginMessageBox.classList.remove('error', 'success');
+
+                const email = loginForm.loginEmail.value.trim();
+                const password = loginForm.loginPassword.value;
+
+                if (!email || !password) {
+                    loginMessageBox.textContent = 'Please fill in all fields.';
+                    loginMessageBox.classList.add('error');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    loginMessageBox.textContent = 'Login successful! Redirecting...';
+                    loginMessageBox.classList.add('success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    loginMessageBox.textContent = 'Invalid email or password.';
+                    loginMessageBox.classList.add('error');
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <main class="login">
@@ -28,8 +58,11 @@ Contains a semantic form for existing users to log in.
                 <button type="submit">Log In</button>
             </form>
 
-            <!-- Message box for success or error messages -->
             <div id="loginMessage" aria-live="polite"></div>
+
+            <p class="form-footer">
+                Don't have an account? <a href="signup.html">Sign Up</a>
+            </p>
         </section>
     </main>
 </body>

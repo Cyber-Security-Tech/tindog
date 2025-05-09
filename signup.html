@@ -1,9 +1,4 @@
-<!-- 
-signup.html
-Signup page for TinDog application.
-Contains a semantic form for new user registration.
--->
-
+<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +7,52 @@ Contains a semantic form for new user registration.
     <title>Sign Up | TinDog</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/forms.css">
-    <script src="scripts/auth.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const signupForm = document.getElementById('signupForm');
+            const signupMessageBox = document.getElementById('signupMessage');
+
+            signupForm.addEventListener('submit', e => {
+                e.preventDefault();
+                signupMessageBox.textContent = '';
+                signupMessageBox.classList.remove('error', 'success');
+
+                const name = signupForm.name.value.trim();
+                const email = signupForm.email.value.trim();
+                const password = signupForm.password.value;
+                const confirmPassword = signupForm.confirmPassword.value;
+
+                const errors = [];
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!name) errors.push('Name is required.');
+                if (!email) errors.push('Email is required.');
+                else if (!emailRegex.test(email)) errors.push('Invalid email format.');
+                if (!password) errors.push('Password is required.');
+                else if (password.length < 6) errors.push('Password must be at least 6 characters.');
+                if (password !== confirmPassword) errors.push('Passwords do not match.');
+
+                if (errors.length > 0) {
+                    signupMessageBox.innerHTML = errors.map(err => `<p class="error">${err}</p>`).join('');
+                } else {
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    if (users.find(user => user.email === email)) {
+                        signupMessageBox.textContent = 'User already exists.';
+                        signupMessageBox.classList.add('error');
+                        return;
+                    }
+                    users.push({ name, email, password });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    signupMessageBox.textContent = 'Signup successful! Redirecting...';
+                    signupMessageBox.classList.add('success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <main class="signup">
@@ -34,10 +74,8 @@ Contains a semantic form for new user registration.
                 <button type="submit">Sign Up</button>
             </form>
 
-            <!-- Message box immediately under the form -->
             <div id="signupMessage" aria-live="polite"></div>
 
-            <!-- Static login link at the bottom -->
             <p class="form-footer">
                 Already have an account? <a href="login.html">Log In</a>
             </p>
