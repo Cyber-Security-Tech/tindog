@@ -7,52 +7,16 @@
     <title>Log In | TinDog</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/forms.css">
-    <script defer>
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('loginForm');
-            const loginMessageBox = document.getElementById('loginMessage');
-
-            loginForm.addEventListener('submit', e => {
-                e.preventDefault();
-                loginMessageBox.textContent = '';
-                loginMessageBox.classList.remove('error', 'success');
-
-                const email = loginForm.loginEmail.value.trim();
-                const password = loginForm.loginPassword.value;
-
-                if (!email || !password) {
-                    loginMessageBox.textContent = 'Please fill in all fields.';
-                    loginMessageBox.classList.add('error');
-                    return;
-                }
-
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                const user = users.find(u => u.email === email && u.password === password);
-
-                if (user) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    loginMessageBox.textContent = 'Login successful! Redirecting...';
-                    loginMessageBox.classList.add('success');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    loginMessageBox.textContent = 'Invalid email or password.';
-                    loginMessageBox.classList.add('error');
-                }
-            });
-        });
-    </script>
 </head>
 <body>
     <main class="login">
         <section class="login__container">
             <h1>Log In</h1>
             <form id="loginForm" novalidate>
-                <label for="email">Email</label>
+                <label for="loginEmail">Email</label>
                 <input type="email" id="loginEmail" name="email" required>
 
-                <label for="password">Password</label>
+                <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" name="password" required>
 
                 <button type="submit">Log In</button>
@@ -65,5 +29,8 @@
             </p>
         </section>
     </main>
+
+    <!-- External script at the bottom -->
+    <script src="scripts/login.js"></script>
 </body>
 </html>
