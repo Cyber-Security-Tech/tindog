@@ -1,49 +1,52 @@
 // login.js → handles user login
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
-    const messageBox = document.getElementById('loginMessage');
+  const loginForm = document.getElementById('loginForm');
+  const messageBox = document.getElementById('loginMessage');
 
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        messageBox.textContent = '';
-        messageBox.className = '';
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    displayMessage('', '');
 
-        const email = loginForm.loginEmail.value.trim();
-        const password = loginForm.loginPassword.value.trim();
+    const email = loginForm.loginEmail.value.trim();
+    const password = loginForm.loginPassword.value.trim();
 
-        if (!email || !password) {
-            messageBox.textContent = 'Please fill in all fields.';
-            messageBox.classList.add('error');
-            return;
-        }
+    if (!email || !password) {
+      displayMessage('Please fill in all fields.', 'error');
+      return;
+    }
 
-        try {
-            const res = await fetch('http://localhost:3000/api/users/login', {  // ✅ make sure this matches backend
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+    try {
+      const res = await fetch('http://localhost:3000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-            const data = await res.json();
+      const data = await res.json();
 
-            if (res.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                localStorage.setItem('isLoggedIn', 'true');
-                messageBox.textContent = 'Login successful! Redirecting...';
-                messageBox.classList.add('success');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-            } else {
-                messageBox.textContent = data.error || 'Invalid email or password.';
-                messageBox.classList.add('error');
-            }
-        } catch (err) {
-            console.error('Login error:', err);
-            messageBox.textContent = 'Server error, please try again later.';
-            messageBox.classList.add('error');
-        }
-    });
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user || {}));
+        localStorage.setItem('isLoggedIn', 'true');
+        displayMessage('Login successful! Redirecting...', 'success');
+
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      } else {
+        displayMessage(data.error || 'Invalid email or password.', 'error');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      displayMessage('Server error, please try again later.', 'error');
+    }
+  });
+
+  function displayMessage(message, type) {
+    if (!messageBox) return;
+    messageBox.textContent = message;
+    messageBox.className = type;
+    messageBox.setAttribute('role', 'alert');
+  }
 });

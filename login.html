@@ -2,35 +2,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In | TinDog</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/forms.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In | TinDog</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/forms.css" />
 </head>
 <body>
-    <main class="login">
-        <section class="login__container">
-            <h1>Log In</h1>
-            <form id="loginForm" novalidate>
-                <label for="loginEmail">Email</label>
-                <input type="email" id="loginEmail" name="email" required>
+  <main class="login">
+    <section class="login__container">
+      <h1>Log In</h1>
+      <form id="loginForm" novalidate>
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" name="email" required autocomplete="email" />
 
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" name="password" required>
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" name="password" required autocomplete="current-password" />
 
-                <button type="submit">Log In</button>
-            </form>
+        <button type="submit">Log In</button>
+      </form>
 
-            <div id="loginMessage" aria-live="polite"></div>
+      <div id="loginMessage" aria-live="polite"></div>
 
-            <p class="form-footer">
-                Don't have an account? <a href="signup.html">Sign Up</a>
-            </p>
-        </section>
-    </main>
+      <p class="form-footer">
+        Don't have an account? <a href="signup.html">Sign Up</a>
+      </p>
+    </section>
+  </main>
 
-    <!-- External script at the bottom -->
-    <script src="scripts/login.js"></script>
+  <script src="scripts/login.js"></script>
 </body>
 </html>

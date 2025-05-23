@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('favorites-container');
   const logoutButton = document.getElementById('logout-button');
 
-  // Auth check
   const token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
@@ -14,8 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Log out handler
-  logoutButton.addEventListener('click', () => {
+  logoutButton?.addEventListener('click', () => {
     localStorage.clear();
     alert('You have been logged out.');
     window.location.href = 'index.html';
@@ -23,20 +21,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const res = await fetch('http://localhost:3000/api/favorites', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` },
     });
 
+    if (!res.ok) throw new Error(`Failed with status ${res.status}`);
     const favorites = await res.json();
 
     if (!Array.isArray(favorites) || favorites.length === 0) {
-      container.innerHTML = '<p class="text-center">You have no favorite dogs yet.</p>';
+      showMessage('You have no favorite dogs yet.');
       return;
     }
 
     favorites.forEach(fav => {
-      const dog = fav.dog || fav; // handle direct dog list or dog object inside favorite
+      const dog = fav.dog || fav;
+
+      if (!dog?.id || !dog.name) return;
+
       const card = document.createElement('div');
       card.className = 'col-md-4';
       card.innerHTML = `
@@ -54,34 +54,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     container.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('remove-fav-btn')) {
-        const dogId = e.target.dataset.id;
-        try {
-          const res = await fetch(`http://localhost:3000/api/favorites/${dogId}`, {
-            method: 'DELETE',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
+      if (!e.target.classList.contains('remove-fav-btn')) return;
 
-          const data = await res.json();
-          if (res.ok) {
-            e.target.closest('.col-md-4').remove();
-            if (container.children.length === 0) {
-              container.innerHTML = '<p class="text-center">You have no favorite dogs left.</p>';
-            }
-          } else {
-            console.error(data.error);
-            alert(data.error || 'Failed to remove favorite.');
+      const dogId = e.target.dataset.id;
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/favorites/${dogId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          e.target.closest('.col-md-4').remove();
+          if (container.querySelectorAll('.col-md-4').length === 0) {
+            showMessage('You have no favorite dogs left.');
           }
-        } catch (err) {
-          console.error('Error removing favorite:', err);
-          alert('Server error while removing favorite.');
+        } else {
+          console.error(data.error);
+          alert(data.error || 'Failed to remove favorite.');
         }
+      } catch (err) {
+        console.error('Error removing favorite:', err);
+        alert('Server error while removing favorite.');
       }
     });
+
   } catch (err) {
     console.error('Error loading favorites:', err);
-    container.innerHTML = '<p class="text-danger text-center">Failed to load favorites.</p>';
+    showMessage('Failed to load favorites.', 'error');
+  }
+
+  function showMessage(text, type = 'info') {
+    container.innerHTML = `
+      <p class="text-center text-${type === 'error' ? 'danger' : 'secondary'}" role="alert">${text}</p>
+    `;
   }
 });
