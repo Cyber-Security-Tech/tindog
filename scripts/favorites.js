@@ -1,15 +1,39 @@
-// favorites.js → Handles fetching and removing favorite dogs
-
 document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('favorites-container');
   const logoutButton = document.getElementById('logout-button');
 
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-  if (!token || !isLoggedIn) {
-    alert('Please log in to view your favorites.');
+  function forceLogout() {
+    localStorage.clear();
+    alert('Session expired. Please log in again.');
     window.location.href = 'login.html';
+  }
+
+  async function fetchWithRefresh(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status !== 401) return res;
+
+    const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (refreshRes.ok) {
+      const data = await refreshRes.json();
+      localStorage.setItem('token', data.token);
+      token = data.token;
+      options.headers = options.headers || {};
+      options.headers.Authorization = `Bearer ${token}`;
+      return fetch(url, options);
+    } else {
+      forceLogout();
+    }
+  }
+
+  if (!token || !isLoggedIn) {
+    forceLogout();
     return;
   }
 
@@ -20,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   try {
-    const res = await fetch('http://localhost:3000/api/favorites', {
+    const res = await fetchWithRefresh('http://localhost:3000/api/favorites', {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -34,7 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     favorites.forEach(fav => {
       const dog = fav.dog || fav;
-
       if (!dog?.id || !dog.name) return;
 
       const card = document.createElement('div');
@@ -59,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dogId = e.target.dataset.id;
 
       try {
-        const res = await fetch(`http://localhost:3000/api/favorites/${dogId}`, {
+        const res = await fetchWithRefresh(`http://localhost:3000/api/favorites/${dogId}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });

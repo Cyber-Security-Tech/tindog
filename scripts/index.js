@@ -4,8 +4,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const signupLink = document.getElementById('signup-link');
   const loginLink = document.getElementById('login-link');
 
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+  function forceLogout() {
+    localStorage.clear();
+    alert('Session expired. Please log in again.');
+    window.location.href = 'login.html';
+  }
+
+  async function fetchWithRefresh(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status !== 401) return res;
+
+    const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (refreshRes.ok) {
+      const data = await refreshRes.json();
+      localStorage.setItem('token', data.token);
+      token = data.token;
+      options.headers = options.headers || {};
+      options.headers.Authorization = `Bearer ${token}`;
+      return fetch(url, options);
+    } else {
+      forceLogout();
+    }
+  }
 
   let user = {};
   try {
@@ -33,8 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (isLoggedIn && token) {
     try {
-      const res = await fetch('http://localhost:3000/api/favorites', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetchWithRefresh('http://localhost:3000/api/favorites', {
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res.ok) {
@@ -101,13 +128,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const method = isFavorited ? 'DELETE' : 'POST';
 
       try {
-        const res = await fetch(url, {
+        const res = await fetchWithRefresh(url, {
           method,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`
           },
-          body: isFavorited ? null : JSON.stringify({ dogId }),
+          body: isFavorited ? null : JSON.stringify({ dogId })
         });
 
         let responseData = {};

@@ -18,9 +18,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-  if (!isLoggedIn || !token) {
-    alert('Please log in to view your profile.');
+  function forceLogout() {
+    localStorage.clear();
+    alert('Session expired. Please log in again.');
     window.location.href = 'login.html';
+  }
+
+  async function fetchWithRefresh(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status !== 401) return res;
+
+    const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    if (refreshRes.ok) {
+      const data = await refreshRes.json();
+      localStorage.setItem('token', data.token);
+      options.headers.Authorization = `Bearer ${data.token}`;
+      return fetch(url, options);
+    } else {
+      forceLogout();
+    }
+  }
+
+  if (!isLoggedIn || !token) {
+    forceLogout();
     return;
   }
 
@@ -31,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   try {
-    const res = await fetch('http://localhost:3000/api/users/me', {
+    const res = await fetchWithRefresh('http://localhost:3000/api/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -56,11 +80,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const updatedEmail = profileEmail.value.trim();
 
     try {
-      const res = await fetch('http://localhost:3000/api/users/me', {
+      const res = await fetchWithRefresh('http://localhost:3000/api/users/me', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ name: updatedName, email: updatedEmail })
       });
@@ -110,16 +134,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/users/change-password', {
+      const res = await fetchWithRefresh('http://localhost:3000/api/users/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({
-          currentPassword: current,
-          newPassword: next
-        })
+        body: JSON.stringify({ currentPassword: current, newPassword: next })
       });
 
       const data = await res.json();
@@ -144,9 +165,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!confirmed) return;
 
     try {
-      const res = await fetch('http://localhost:3000/api/users/me', {
+      const res = await fetchWithRefresh('http://localhost:3000/api/users/me', {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
       const data = await res.json();
