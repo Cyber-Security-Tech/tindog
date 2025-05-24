@@ -1,39 +1,98 @@
-<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up | TinDog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css" />
-  <link rel="stylesheet" href="styles/forms.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #4ecdc4, #556270);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-floating > .form-control:focus {
+      border-color: #4ecdc4;
+      box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
+    }
+
+    .btn-primary {
+      background-color: #4ecdc4;
+      border-color: #4ecdc4;
+    }
+
+    .btn-primary:hover {
+      background-color: #3db8b2;
+      border-color: #3db8b2;
+    }
+
+    #signupMessage {
+      margin-top: 10px;
+      min-height: 1.5rem;
+    }
+
+    .auth-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 15px;
+    }
+  </style>
 </head>
 <body>
-  <main class="signup">
-    <section class="signup__container">
-      <h1>Sign Up</h1>
-      <form id="signupForm" novalidate>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required autocomplete="name" />
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required autocomplete="email" />
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand fw-bold" href="index.html">TinDog</a>
+      <a href="login.html" class="btn btn-outline-primary">Log In</a>
+    </div>
+  </nav>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required autocomplete="new-password" />
+  <div class="auth-container">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="card p-4">
+            <h2 class="text-center mb-4 fw-bold">Create Your Account</h2>
+            <form id="signupForm" novalidate>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" required autocomplete="name">
+                <label for="name"><i class="fa fa-user me-2"></i>Name</label>
+              </div>
 
-        <button type="submit">Sign Up</button>
-      </form>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required autocomplete="email">
+                <label for="email"><i class="fa fa-envelope me-2"></i>Email</label>
+              </div>
 
-      <div id="signupMessage" aria-live="polite"></div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required autocomplete="new-password">
+                <label for="password"><i class="fa fa-lock me-2"></i>Password</label>
+              </div>
 
-      <p class="form-footer">
-        Already have an account? <a href="login.html">Log In</a>
-      </p>
-    </section>
-  </main>
+              <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+              <div id="signupMessage" class="text-center text-danger mt-2" aria-live="polite"></div>
+            </form>
+            <p class="text-center mt-3">
+              Already have an account? <a href="login.html">Log In</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Use module to support ES6 imports -->
   <script type="module" src="scripts/signup.js"></script>
 </body>
 </html>

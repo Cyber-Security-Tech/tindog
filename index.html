@@ -18,11 +18,13 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navContent">
       <ul class="navbar-nav align-items-center" id="auth-controls">
+        <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="favorites.html" id="favorites-link">Favorites</a></li>
+        <li class="nav-item"><a class="nav-link d-none" href="profile.html" id="profile-link">Profile</a></li>
         <li class="nav-item"><a class="nav-link" href="signup.html" id="signup-link">Sign Up</a></li>
         <li class="nav-item"><a class="nav-link" href="login.html" id="login-link">Log In</a></li>
         <li class="nav-item">
-          <button class="btn btn-outline-primary ms-2" id="logout-button" style="display:none;">Log Out</button>
+          <button class="btn btn-outline-primary ms-2 d-none" id="logout-button">Log Out</button>
         </li>
       </ul>
     </div>
@@ -39,7 +41,7 @@
   <div class="container">
     <h2 class="text-center mb-4 fw-bold">Available Dogs</h2>
 
-    <!-- 🔽 Filter dropdown container (populated by JavaScript) -->
+    <!-- Filter dropdown container (populated by JavaScript) -->
     <div class="row justify-content-center mb-4">
       <div class="col-md-6" id="filter-container"></div>
     </div>
@@ -68,5 +70,20 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="scripts/index.js"></script>
+
+<!-- Script to toggle auth-based navbar elements -->
+<script>
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  if (isLoggedIn) {
+    document.getElementById('signup-link')?.classList.add('d-none');
+    document.getElementById('login-link')?.classList.add('d-none');
+    document.getElementById('logout-button')?.classList.remove('d-none');
+    document.getElementById('profile-link')?.classList.remove('d-none');
+  } else {
+    document.getElementById('logout-button')?.classList.add('d-none');
+    document.getElementById('profile-link')?.classList.add('d-none');
+  }
+</script>
+
 </body>
 </html>
