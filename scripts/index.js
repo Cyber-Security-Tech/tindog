@@ -1,3 +1,5 @@
+import { fetchWithRefresh, handleAuthError } from './helpers.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('dogs-container');
   const logoutBtn = document.getElementById('logout-button');
@@ -7,43 +9,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   let token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-  function forceLogout() {
+  function logout() {
     localStorage.clear();
-    alert('Session expired. Please log in again.');
+    alert('You have been logged out.');
     window.location.href = 'login.html';
   }
-
-  async function fetchWithRefresh(url, options = {}) {
-    const res = await fetch(url, options);
-    if (res.status !== 401) return res;
-
-    const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    if (refreshRes.ok) {
-      const data = await refreshRes.json();
-      localStorage.setItem('token', data.token);
-      token = data.token;
-      options.headers = options.headers || {};
-      options.headers.Authorization = `Bearer ${token}`;
-      return fetch(url, options);
-    } else {
-      forceLogout();
-    }
-  }
-
-  let user = {};
-  try {
-    const storedUser = localStorage.getItem('user');
-    user = storedUser && storedUser !== 'undefined' ? JSON.parse(storedUser) : {};
-  } catch (err) {
-    console.warn('Invalid user in localStorage:', err);
-    user = {};
-  }
-
-  let favoriteDogIds = [];
 
   if (isLoggedIn && token) {
     signupLink?.classList.add('d-none');
@@ -53,33 +23,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     logoutBtn?.classList.add('d-none');
   }
 
-  logoutBtn?.addEventListener('click', () => {
-    localStorage.clear();
-    window.location.href = 'index.html';
-  });
+  logoutBtn?.addEventListener('click', logout);
+
+  let favoriteDogIds = [];
 
   if (isLoggedIn && token) {
     try {
-      const res = await fetchWithRefresh('http://localhost:3000/api/favorites', {
+      const favRes = await fetchWithRefresh('http://localhost:3000/api/favorites', {
+        method: 'GET',
+        credentials: 'include',
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (res.ok) {
-        const favorites = await res.json();
+      if (!handleAuthError(favRes) && favRes.ok) {
+        const favorites = await favRes.json();
         favoriteDogIds = favorites.map(f => f.id || f.dogId || (f.dog && f.dog.id));
       }
     } catch (err) {
-      console.warn('Could not load favorites:', err);
+      console.warn('Failed to load favorites:', err);
     }
   }
 
   try {
-    const dogRes = await fetch('http://localhost:3000/api/dogs');
+    const dogRes = await fetch('http://localhost:3000/api/dogs', { credentials: 'include' });
     if (!dogRes.ok) throw new Error(`Dog fetch failed: ${dogRes.status}`);
 
     const raw = await dogRes.text();
-    console.log('Raw dog API response:', raw);
-
     let dogs;
     try {
       dogs = JSON.parse(raw);
@@ -115,41 +84,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.addEventListener('click', async (e) => {
       if (!e.target.classList.contains('heart-icon')) return;
 
-      const icon = e.target;
-      const dogId = icon.dataset.id;
-
       if (!isLoggedIn || !token) {
         alert('Please log in to favorite dogs.');
         return;
       }
 
+      const icon = e.target;
+      const dogId = icon.dataset.id;
       const isFavorited = icon.classList.contains('fa-solid');
-      const url = `http://localhost:3000/api/favorites/${dogId}`;
       const method = isFavorited ? 'DELETE' : 'POST';
 
       try {
-        const res = await fetchWithRefresh(url, {
+        const res = await fetchWithRefresh(`http://localhost:3000/api/favorites/${dogId}`, {
           method,
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`
           },
           body: isFavorited ? null : JSON.stringify({ dogId })
         });
 
-        let responseData = {};
-        try {
-          responseData = await res.json();
-        } catch (jsonErr) {
-          console.warn('Favorite JSON parse error:', jsonErr);
-        }
+        if (handleAuthError(res)) return;
 
         if (res.ok) {
           icon.classList.toggle('fa-solid');
           icon.classList.toggle('fa-regular');
           icon.classList.toggle('text-danger');
         } else {
-          alert(responseData.error || 'Could not update favorites.');
+          const data = await res.json();
+          alert(data.error || 'Could not update favorites.');
         }
       } catch (err) {
         console.error('Favorite toggle error:', err);

@@ -15,52 +15,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   const deleteBtn = document.getElementById('deleteAccountButton');
   const deleteMessage = document.getElementById('deleteMessage');
 
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-  function forceLogout() {
+  const forceLogout = () => {
     localStorage.clear();
     alert('Session expired. Please log in again.');
     window.location.href = 'login.html';
-  }
+  };
 
-  async function fetchWithRefresh(url, options = {}) {
+  const fetchWithRefresh = async (url, options = {}) => {
+    options.credentials = 'include';
     const res = await fetch(url, options);
     if (res.status !== 401) return res;
 
     const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
       method: 'POST',
-      credentials: 'include',
+      credentials: 'include'
     });
 
     if (refreshRes.ok) {
       const data = await refreshRes.json();
-      localStorage.setItem('token', data.token);
-      options.headers.Authorization = `Bearer ${data.token}`;
+      token = data.token;
+      localStorage.setItem('token', token);
+      options.headers = options.headers || {};
+      options.headers.Authorization = `Bearer ${token}`;
       return fetch(url, options);
     } else {
       forceLogout();
     }
-  }
+  };
 
   if (!isLoggedIn || !token) {
     forceLogout();
     return;
   }
 
-  logoutBtn.addEventListener('click', () => {
+  logoutBtn?.addEventListener('click', () => {
     localStorage.clear();
     alert('You have been logged out.');
     window.location.href = 'index.html';
   });
 
+  // Load user profile
   try {
     const res = await fetchWithRefresh('http://localhost:3000/api/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     if (!res.ok) throw new Error('Failed to load user');
-
     const user = await res.json();
     profileName.value = user.name;
     profileEmail.value = user.email;
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileMessage.className = 'text-danger';
   }
 
+  // Update profile
   profileForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     profileMessage.textContent = '';
@@ -84,13 +88,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ name: updatedName, email: updatedEmail })
       });
 
       const data = await res.json();
-
       if (res.ok) {
         profileMessage.textContent = 'Profile updated successfully.';
         profileMessage.className = 'text-success';
@@ -106,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Change password
   passwordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     passwordMessage.textContent = '';
@@ -138,13 +142,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ currentPassword: current, newPassword: next })
       });
 
       const data = await res.json();
-
       if (res.ok) {
         passwordMessage.textContent = 'Password updated successfully.';
         passwordMessage.className = 'text-success';
@@ -160,6 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Delete account
   deleteBtn.addEventListener('click', async () => {
     const confirmed = confirm('Are you sure you want to permanently delete your account?');
     if (!confirmed) return;
@@ -167,11 +171,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const res = await fetchWithRefresh('http://localhost:3000/api/users/me', {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       const data = await res.json();
-
       if (res.ok) {
         deleteMessage.textContent = 'Account deleted. Redirecting...';
         deleteMessage.className = 'text-success';

@@ -1,39 +1,16 @@
+// favorites.js → Handles fetching and removing favorite dogs
+import { fetchWithRefresh, handleAuthError } from './helpers.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('favorites-container');
   const logoutButton = document.getElementById('logout-button');
 
-  let token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-  function forceLogout() {
-    localStorage.clear();
-    alert('Session expired. Please log in again.');
-    window.location.href = 'login.html';
-  }
-
-  async function fetchWithRefresh(url, options = {}) {
-    const res = await fetch(url, options);
-    if (res.status !== 401) return res;
-
-    const refreshRes = await fetch('http://localhost:3000/api/users/refresh-token', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    if (refreshRes.ok) {
-      const data = await refreshRes.json();
-      localStorage.setItem('token', data.token);
-      token = data.token;
-      options.headers = options.headers || {};
-      options.headers.Authorization = `Bearer ${token}`;
-      return fetch(url, options);
-    } else {
-      forceLogout();
-    }
-  }
-
   if (!token || !isLoggedIn) {
-    forceLogout();
+    alert('Please log in to view your favorites.');
+    window.location.href = 'login.html';
     return;
   }
 
@@ -45,12 +22,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const res = await fetchWithRefresh('http://localhost:3000/api/favorites', {
-      headers: { Authorization: `Bearer ${token}` },
+      method: 'GET',
+      credentials: 'include',
+      headers: { Authorization: `Bearer ${token}` }
     });
 
-    if (!res.ok) throw new Error(`Failed with status ${res.status}`);
-    const favorites = await res.json();
+    if (handleAuthError(res)) return;
 
+    const favorites = await res.json();
     if (!Array.isArray(favorites) || favorites.length === 0) {
       showMessage('You have no favorite dogs yet.');
       return;
@@ -84,17 +63,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await fetchWithRefresh(`http://localhost:3000/api/favorites/${dogId}`, {
           method: 'DELETE',
+          credentials: 'include',
           headers: { Authorization: `Bearer ${token}` }
         });
 
+        if (handleAuthError(res)) return;
+
         const data = await res.json();
         if (res.ok) {
-          e.target.closest('.col-md-4').remove();
+          e.target.closest('.col-md-4')?.remove();
           if (container.querySelectorAll('.col-md-4').length === 0) {
             showMessage('You have no favorite dogs left.');
           }
         } else {
-          console.error(data.error);
           alert(data.error || 'Failed to remove favorite.');
         }
       } catch (err) {
